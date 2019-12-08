@@ -1,0 +1,38 @@
+version: '3.5'
+
+services:
+  db:
+    image: postgres:12-alpine
+    user: postgres
+    volumes:
+      - database:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=chat
+      - POSTGRES_USER=chat
+      - POSTGRES_PASSWORD=chat
+    ports:
+      - '${DATABASE_PORT}:5432'
+    networks:
+      - chat
+
+  backend:
+    image: node:12
+    working_dir: /usr/app
+    user: node
+    command: 'npm run start:dev'
+    volumes:
+      - ./app:/usr/app
+    ports:
+      - '${PORT}:5000'
+    env_file:
+      - .env
+    networks:
+      - chat
+
+networks:
+  chat:
+    name: chat_api
+    driver: bridge
+
+volumes:
+  database:
